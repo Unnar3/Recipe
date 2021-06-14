@@ -1,0 +1,546 @@
+openapi: '3.0.2'
+
+info:
+  title: Recipe
+  version: '1.0'
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Auth
+    description: Endpoints for signup and login
+  - name: User
+    description: Endpoints for signed in users
+  - name: Open
+    description: Endpoints open for everyone
+
+paths:
+  /v1/register:
+    post:
+      tags:
+        - Auth
+      summary: Register new user
+      operationId: register
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/RegisterBody' 
+
+      responses:
+        '201':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/RegisterSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '401':
+          description: Unauthorized
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/AuthorisationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError' 
+  
+  /v1/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      operationId: login
+      security:
+        - basicAuth: []
+       
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/LoginSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError' 
+  
+  /v1/user/recipes/create:
+    post:
+      tags:
+        - User
+      summary: Create new recipe
+      operationId: createRecipe
+      security:
+        - bearerAuth: []
+       
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateRecipeBody' 
+
+      responses:
+        '201':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/CreateRecipeSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '401':
+          description: Unauthorized
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/AuthorisationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError'
+  
+  /v1/user/recipes/list:
+    get:
+      tags:
+        - User
+      summary: List receipts for the user
+      operationId: listUserRecipes
+      security:
+        - bearerAuth: []
+       
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/CreateRecipeSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError'
+  
+  /v1/recipes:
+    get:
+      tags:
+        - Open
+      summary: List receipts
+      operationId: listRecipes
+       
+      parameters:
+        - $ref: '#/components/parameters/listRecipesUserParameter'
+        - $ref: '#/components/parameters/listRecipesTitleParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ListRecipesSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError'
+  
+  /v1/recipes/{recipeId}:
+    get:
+      tags:
+        - Open
+      summary: Get recipe
+      operationId: getRecipe
+       
+      parameters:
+        - $ref: '#/components/parameters/recipeIdParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/GetRecipeSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError'
+  
+  /v1/users:
+    get:
+      tags:
+        - Open
+      summary: Get users
+      operationId: listUsers
+       
+      parameters:
+        - $ref: '#/components/parameters/listUsersNameParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ListUsersSuccess' 
+        '400':
+          description: Bad Request
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/ValidationError' 
+        '500':
+          description: Internal Error
+          content:
+            'application/json':
+              schema: 
+                $ref: '#/components/schemas/InternalError'
+
+
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    listRecipesUserParameter:
+      in: query
+      name: userId
+      schema:
+        type: string
+        example: 60c3b1fcb35d64753d9e34f3
+      required: false
+      description: Id of the user to filter on
+    listRecipesTitleParameter:
+      in: query
+      name: title
+      schema:
+        type: string
+        example: Pizza
+      required: false
+      description: String to filter receipt title on
+    recipeIdParameter:
+      in: path
+      name: recipeId
+      schema:
+        type: string
+        example: 60c3b1fcb35d64753d9e34f3
+      required: true
+      description: Id of the recipe being accessed
+    listUsersNameParameter:
+      in: query
+      name: name
+      schema:
+        type: string
+        example: John Smith
+      required: false
+      description: The name of the user to search for
+
+  schemas:
+    RegisterBody:
+      type: object
+      required:
+        - name
+        - email 
+        - password 
+        - about 
+      properties:
+        name:
+          type: string
+          example: John Smith
+        email:
+          type: string
+          example: john@smith.com
+        password:
+          type: string
+          minLength: 6
+          maxLength: 20
+          example: Recip3
+        about:
+          type: string
+          example: |
+            John Smith is a passionate author, food photographer, cook, baker, and recipe developer whose blog, The ...
+    
+    RegisterSuccess:
+      type: object
+      required:
+        - name
+        - email 
+      properties:
+        name:
+          type: string
+          example: John Smith
+        email:
+          type: string
+          example: john@smith.com
+    
+    LoginSuccess:
+      type: object
+      required:
+        - token 
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+    CreateRecipeBody:
+      type: object
+      required:
+        - title
+        - summary 
+        - authorsLifeStory 
+        - ingredients
+        - instructions 
+      properties:
+        title:
+          type: string
+          example: Pinapple Pizza
+        summary:
+          type: string
+          example: Pinapple pizza made from the best...
+        authorsLifeStory:
+          type: string
+          example: |
+            Discovered this pizza recipe when I was ...
+        ingredients:
+          type: array
+          items:
+            type: string
+            example: pinapple
+        instructions:
+          type: array
+          items:
+            type: string
+            example: step 1
+    
+    CreateRecipeSuccess:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+    
+    ListUserRecipesSuccess:
+      type: object
+      required:
+        - id
+        - title
+        - summary
+      properties:
+        id:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+        title:
+          type: string
+          example: Pinapple Pizza
+        summary:
+          type: string
+          example: Pinapple pizza made from the best...
+    
+    ListRecipesSuccess:
+      type: object
+      required:
+        - id
+        - title
+        - summary
+        - userId
+        - userName
+        - userAbout
+      properties:
+        id:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+        title:
+          type: string
+          example: Pinapple Pizza
+        summary:
+          type: string
+          example: Pinapple pizza made from the best...
+        userId:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+        userName:
+          type: string
+          example: John Smith
+        userAbout:
+          type: string
+          example: |
+            John Smith is a passionate author, food photographer, cook, baker, and recipe developer whose blog, The ...
+    
+    GetRecipeSuccess:
+      type: object
+      required:
+        - id 
+        - title
+        - summary 
+        - authorsLifeStory 
+        - ingredients
+        - instructions 
+        - userId
+        - userName
+        - userAbout
+      properties:
+        id:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+        title:
+          type: string
+          example: Pinapple Pizza
+        summary:
+          type: string
+          example: Pinapple pizza made from the best...
+        authorsLifeStory:
+          type: string
+          example: |
+            Discovered this pizza recipe when I was ...
+        ingredients:
+          type: array
+          items:
+            type: string
+            example: pinapple
+        instructions:
+          type: array
+          items:
+            type: string
+            example: step 1
+        userId:
+          type: string
+          example: 60c3b1fcb35d64753d9e34f3
+        userName:
+          type: string
+          example: John Smith
+        userAbout:
+          type: string
+          example: |
+            John Smith is a passionate author, food photographer, cook, baker, and recipe developer whose blog, The ...
+    
+    ListUsersSuccess:
+      type: array
+      items:
+        type: object
+        required:
+          - id
+          - name
+          - about
+        properties:
+          id:
+            type: string
+            example: 60c3b1fcb35d64753d9e34f3
+          name:
+            type: string
+            example: John Smith
+          about:
+            type: string
+            example: |
+              John Smith is a passionate author, food photographer, cook, baker, and recipe developer whose blog, The ...
+
+    InternalError:
+      type: object
+      required:
+        - message 
+      properties:
+        message:
+          type: string
+          enum:
+            - "internal error"
+          example: internal error
+    
+    ValidationError:
+      type: object
+      required:
+        - message 
+        - errors
+      properties:
+        message:
+          type: string
+          enum:
+            - "validation error"
+          example: validation error“
+        errors:
+          type: array
+          items:
+            type: string
+    
+    AuthorisationError:
+      type: object
+      required:
+        - message 
+        - errors
+      properties:
+        message:
+          type: string
+          example: invalid username or password
+        errors:
+          type: array
+          items:
+            type: string
+    
+    GenericError:
+      type: object
+      required:
+        - message 
+        - errors
+      properties:
+        message:
+          type: string
+          example: generic error
+        errors:
+          type: array
+          items:
+            type: string

@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "2d950119-0394-4083-9257-146a5507e707",
+		"name": "Recipes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sergio Pastrami\",\n    \"about\": \"bla bla bla\",\n    \"email\": \"sergio@pastrami.com\",\n    \"password\": \"pastrami\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody)",
+									"pm.globals.set(\"user_token\", data.token)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pastrami",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "sergio@pastrami.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create recipe pizza",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Basic hamburger\",\n    \"summary\": \"The best hamburger ever\",\n    \"authorsLifeStory\": \"bla bla bla ...\",\n    \"ingredients\": [\"ground beef\", \"patty\", \"ketchup\"],\n    \"instructions\": [\"shape beef\", \"cook burgers\", \"assemble burger\", \"eat\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/user/recipes/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"user",
+								"recipes",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create recipe hamburger",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Pizza\",\n    \"summary\": \"Sourdough pizza\",\n    \"authorsLifeStory\": \"bla bla bla ...\",\n    \"ingredients\": [\"flour\", \"salt\", \"water\"],\n    \"instructions\": [\"mix\", \"bake\", \"eat\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/user/recipes/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"user",
+								"recipes",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list recipes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/user/recipes/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"user",
+								"recipes",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "clean",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/admin/clean",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"admin",
+								"clean"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "list recipes",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGMyOTc0MGIyMmYxMjBkZGI0MDFjMGMiLCJpYXQiOjE2MjM0MDI2MTQsImV4cCI6MTYyMzQwNjIxNCwiaXNzIjoicmVjaXBlIn0.L6uYVFb_KsSHD4la6_JIao7fFJ07o2mMRoIYPO8J_EQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/recipes?title=pizza",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"recipes"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "pizza"
+						},
+						{
+							"key": "userId",
+							"value": "60c34f4906d497a11a078006",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get recipe",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGMyOTc0MGIyMmYxMjBkZGI0MDFjMGMiLCJpYXQiOjE2MjM0MDI2MTQsImV4cCI6MTYyMzQwNjIxNCwiaXNzIjoicmVjaXBlIn0.L6uYVFb_KsSHD4la6_JIao7fFJ07o2mMRoIYPO8J_EQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/recipes/:recipeId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"recipes",
+						":recipeId"
+					],
+					"variable": [
+						{
+							"key": "recipeId",
+							"value": "60c34f4e06d497a11a078007"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGMyOTc0MGIyMmYxMjBkZGI0MDFjMGMiLCJpYXQiOjE2MjM0MDI2MTQsImV4cCI6MTYyMzQwNjIxNCwiaXNzIjoicmVjaXBlIn0.L6uYVFb_KsSHD4la6_JIao7fFJ07o2mMRoIYPO8J_EQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/users?name=chad",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "chad"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

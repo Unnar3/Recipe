@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+    recipes:
+        build: .
+        restart: always
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_HOST=${DB_HOST}
+        ports:
+            - 8080:8080
